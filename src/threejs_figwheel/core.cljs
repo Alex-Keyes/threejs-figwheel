@@ -43,33 +43,33 @@
                                               )
           renderer (js/THREE.WebGLRenderer. (clj->js {:alpha     true
                                                       :antialias true}))
-          geometry (js/THREE.BoxGeometry. 2 2 2)
           material (js/THREE.MeshNormalMaterial. (clj->js {:wireframe true}))
-          cube  (js/THREE.Mesh. geometry material)
-          cube2 (js/THREE.Mesh. (js/THREE.BoxGeometry. 1 1 1)
-                          material)
-          floor (js/THREE.Mesh. (js/THREE.PlaneBufferGeometry. 5 5) (js/THREE.MeshBasicMaterial. (clj->js {:color 0x0000ff
-                                                                                                                     :wireframe true})))
+          cube (js/THREE.Mesh. (js/THREE.BoxGeometry. 1 1 1)
+                                material)
+          floor (js/THREE.Mesh. (js/THREE.PlaneBufferGeometry. 5 5)
+                                (js/THREE.MeshBasicMaterial. (clj->js {:wireframe true})))
           ; An "alive" flag to let us kill the animation refresh when we tear down:
           RUNNING (atom true)]
       (set! (.. floor -rotation -x) 90)
+      (set! (.. cube -position -x) -5)
+
       (set! (.-xxid renderer)
             (:c (swap! APP-STATE update :c inc)))
       (.setSize renderer (.-innerWidth js/window) (.-innerHeight js/window))
       (.log js/console "Adding: " (.-xxid renderer))
       (.appendChild (.-body js/document) (.-domElement renderer))
-      (.add scene cube2)
+      (.add scene cube)
       (.add scene floor)
       (set! (.. camera -position -z) 3)
 
       (letfn [(animate []
                 (when @RUNNING (js/requestAnimationFrame animate))
-                (set! (.. cube2 -rotation -x)
-                      (+ 0.01 (.. cube2 -rotation -x)))
-                (set! (.. cube2 -rotation -y)
-                      (+ 0.01 (.. cube2 -rotation -y)))
-                (set! (.. cube2 -position -x)
-                      (+ 0.01 (.. cube2 -position -x)))
+                (set! (.. cube -rotation -x)
+                      (+ 0.01 (.. cube -rotation -x)))
+                (set! (.. cube -rotation -y)
+                      (+ 0.01 (.. cube -rotation -y)))
+                (set! (.. cube -position -x)
+                      (+ 0.01 (.. cube -position -x)))
                 (.render renderer scene camera)
                 (when-let [stats (:stats @APP-STATE)] (.update stats)))]
         (animate)
